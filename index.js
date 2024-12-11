@@ -1,12 +1,13 @@
-const express = require("express"); 
-const cors = require("cors"); 
+const express = require("express");
+const cors = require("cors");
 const app = express();
 app.use(express.json());
-app.use(function(req, res, next) {
+require('dotenv').config();
+app.use(function (req, res, next) {
 
-  res.header('Access-Control-Allow-Origin','http://localhost:9899');
-  res.header('Access-Control-Allow-Origin','//translate.google.com'
-);
+  res.header('Access-Control-Allow-Origin', 'http://localhost:9899');
+  res.header('Access-Control-Allow-Origin', '//translate.google.com'
+  );
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
@@ -14,20 +15,20 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get("/test",(req,res)=>{
-    res.send("Hello TSNH!!");
+app.get("/test", (req, res) => {
+  res.send("Hello TSNH!!");
 })
 
-const port =9899;
+const port = 9899;
 // const port =9899;
-app.listen(port,()=>{
-console.log("http://localhost:"+port)
+app.listen(port, () => {
+  console.log("http://localhost:" + port)
 })
 
 app.use(cors({ // origin 'http://localhost:3000' has been blocked by
-    "origin": "*",
-  
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE"
+  "origin": "*",
+
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE"
 }))
 
 // ======= App Route Service===

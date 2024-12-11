@@ -1,0 +1,12 @@
+services:
+  express:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./scr:/app/scr
+      - ./index.js:/app/index.js
+      - ./uploads:/app/uploads
+    scale: 1
+    ports:
+      - "9899:9899"
