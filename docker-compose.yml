@@ -7,6 +7,41 @@ services:
       - ./scr:/app/scr
       - ./index.js:/app/index.js
       - ./uploads:/app/uploads
+      - .env:/app/.env
     scale: 1
+    networks:
+      - mysql-phpmyadmin
     ports:
       - "9899:9899"
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: my-db
+      MYSQL_PASSWORD: 123456
+    networks:
+      - mysql-phpmyadmin
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - mysql-phpmyadmin
+
+networks:
+  mysql-phpmyadmin:
+
+volumes:
+  db_data:
