@@ -2,18 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(express.json());
-require('dotenv').config();
-app.use(function (req, res, next) {
 
-  res.header('Access-Control-Allow-Origin', 'http://194.233.76.73:9899');
-  res.header('Access-Control-Allow-Origin', '//translate.google.com'
-  );
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
-});
+
 
 app.get("/test", (req, res) => {
   res.send("Hello TSNH!!");
