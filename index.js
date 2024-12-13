@@ -5,7 +5,7 @@ app.use(express.json());
 require('dotenv').config();
 app.use(function (req, res, next) {
 
-  res.header('Access-Control-Allow-Origin', 'http://localhost:9899');
+  res.header('Access-Control-Allow-Origin', 'http://194.233.76.73:9899');
   res.header('Access-Control-Allow-Origin', '//translate.google.com'
   );
   res.header(
@@ -22,7 +22,7 @@ app.get("/test", (req, res) => {
 const port = 9899;
 // const port =9899;
 app.listen(port, () => {
-  console.log("http://localhost:" + port)
+  console.log("http://194.233.76.73:" + port)
 })
 
 app.use(cors({ // origin 'http://localhost:3000' has been blocked by
