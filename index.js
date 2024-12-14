@@ -15,13 +15,6 @@ app.get("/test", (req, res) => {
   res.send("Hello TSNH!!");
 })
 
-const port = 9899;
-// const port =9899;
-app.listen(port, () => {
-  console.log("http://194.233.76.73:" + port)
-})
-
-
 // ======= App Route Service===
 
 const user = require("./scr/route/user.route")
@@ -85,5 +78,12 @@ category(app);
 post(app);
 postComment(app);
 postMeta(app);
+
+
+const port = 9899;
+// const port =9899;
+app.listen(port, () => {
+  console.log("http://194.233.76.73:" + port)
+})
 
 
