@@ -2,9 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(express.json());
-requie('dotenv').config();
-
-
+require('dotenv').config();
 
 app.get("/test", (req, res) => {
   res.send("Hello TSNH!!");
@@ -18,7 +16,6 @@ app.listen(port, () => {
 
 app.use(cors({ // origin 'http://localhost:3000' has been blocked by
   "origin": "*",
-
   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE"
 }))
 
