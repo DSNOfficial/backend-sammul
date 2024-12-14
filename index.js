@@ -4,14 +4,14 @@ const app = express();
 require('dotenv').config();
 app.use(express.json());
 
-
+// CORS Middleware
 app.use(cors({ // origin 'http://localhost:3000' has been blocked by
   "origin": "*",
   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
   "allowedHeaders": "Content-Type,Authorization" // Allowed headers
 }))
 
-
+// test route
 app.get("/test", (req, res) => {
   res.send("Hello TSNH!!");
 })
@@ -80,7 +80,7 @@ post(app);
 postComment(app);
 postMeta(app);
 
-
+// Start Server API
 const port = 9899;
 // const port =9899;
 app.listen(port, () => {
