@@ -25,7 +25,7 @@ module.exports = db;
 //     host:"localhost",
 //     user:"root",
 //     password:"",
-//     database:"tsnh_db",
+//     database:"",
 //     //  port:3306,
 //     connectionLimit:100,
 //     namedPlaceholders:true
