@@ -4,7 +4,7 @@ const moment = require("moment");
 // const uploads = multer({ dest: 'uploads/' })
 
 const removeFile = async (fileName) => {
-  var filePath = "./uploads"
+  var filePath = "./uploads/"
 
   try {
     await fs.unlink(filePath + fileName);
@@ -25,7 +25,7 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, callback) {
       // callback(null,Config.image_path)
-      callback(null, "./uploads")
+      callback(null, "./uploads/")
     },
     filename: function (req, file, callback) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
@@ -76,7 +76,7 @@ const logError = async (
 const upload_multi = multer({
   storage: multer.diskStorage({
     destination: function (req, file, callback) {
-      callback(null, "./uploads");
+      callback(null, "./uploads/");
     },
     filename: function (req, file, callback) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -101,7 +101,7 @@ const upload_multi = multer({
 const upload_file = multer({
   storage: multer.diskStorage({
     destination: function (req, file, callback) {
-      callback(null, "./uploads"); // Change the path as needed
+      callback(null, "./uploads/"); // Change the path as needed
     },
     filename: function (req, file, callback) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
