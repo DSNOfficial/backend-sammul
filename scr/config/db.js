@@ -15,22 +15,3 @@ const db = mysql.createPool({
 // });
 
 module.exports = db;
-
-
-
-
-// const mysql = require("mysql2/promise");
-
-// const db = mysql.createPool({
-//     host:"localhost",
-//     user:"root",
-//     password:"",
-//     database:"",
-//     //  port:3306,
-//     connectionLimit:100,
-//     namedPlaceholders:true
-
-
-// })
-
-// module.exports = db;
