@@ -39,9 +39,9 @@ const create = async (req, res) => {
         if (isEmptyOrNull(Phone)) {
             message.Phone = "Phone required!";
         }
-        if (isEmptyOrNull(Email)) {
-            message.Email = "Email required!";
-        }
+        // if (isEmptyOrNull(Email)) {
+        //     message.Email = "Email required!";
+        // }
         if (Object.keys(message).length > 0) {
             res.json({
                 error: true,
