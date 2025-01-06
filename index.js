@@ -1,34 +1,20 @@
-const express = require("express"); 
-const cors = require("cors"); 
+const express = require("express");
+const cors = require("cors");
 const app = express();
+require('dotenv').config();
 app.use(express.json());
-app.use(function(req, res, next) {
 
-  res.header('Access-Control-Allow-Origin','http://localhost:9899');
-  res.header('Access-Control-Allow-Origin','//translate.google.com'
-);
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
-});
-
-app.get("/test",(req,res)=>{
-    res.send("Hello TSNH!!");
-})
-
-const port =9899;
-// const port =9899;
-app.listen(port,()=>{
-console.log("http://localhost:"+port)
-})
-
+// CORS Middleware
 app.use(cors({ // origin 'http://localhost:3000' has been blocked by
-    "origin": "*",
-  
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE"
+  "origin": "*",
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  "allowedHeaders": "Content-Type,Authorization" // Allowed headers
 }))
+
+// test route
+app.get("/test", (req, res) => {
+  res.send("Hello TSNH!!");
+})
 
 // ======= App Route Service===
 
@@ -93,5 +79,12 @@ category(app);
 post(app);
 postComment(app);
 postMeta(app);
+
+// Start Server API
+const port = 9899;
+// const port =9899;
+app.listen(port, () => {
+  console.log("http://194.233.76.73:" + port)
+})
 
 
