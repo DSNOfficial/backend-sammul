@@ -11,18 +11,7 @@ const jwt = require("jsonwebtoken");
 // const ACCESS_TOKEN_KEY = process.env.ACCESS_TOKEN_KEY;
 // const REFRESH_TOKEN_KEY = process.env.REFRESH_TOKEN_KEY;
 
-// const getList = async (req, res) => {
-//     try {
 
-//         const [list] = await db.query("SELECT * FROM users ORDER BY id DESC");
-//         const [role] = await db.query("SELECT * FROM role");
-//         res.json({ role, list });
-
-
-//     } catch (err) {
-//         logError("users.getList", err, res);
-//     }
-// };
 
 
 
