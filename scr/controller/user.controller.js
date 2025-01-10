@@ -1,8 +1,15 @@
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
 const { logError, isEmptyOrNull, getPermissionByRoleMenu } = require("../config/helper");
-const { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } = require("../config/token_key");
+// const { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } = require("../config/token_key");
 const jwt = require("jsonwebtoken");
+
+const dotenv = require("dotenv");
+
+dotenv.config(); // Load environment variables
+
+const ACCESS_TOKEN_KEY = process.env.ACCESS_TOKEN_KEY;
+const REFRESH_TOKEN_KEY = process.env.REFRESH_TOKEN_KEY;
 
 // const getList = async (req, res) => {
 //     try {
@@ -16,6 +23,7 @@ const jwt = require("jsonwebtoken");
 //         logError("users.getList", err, res);
 //     }
 // };
+
 
 
 const getList = async (req, res) => {
