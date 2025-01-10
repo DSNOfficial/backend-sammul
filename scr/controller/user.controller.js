@@ -1,7 +1,7 @@
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
 const { logError, isEmptyOrNull, getPermissionByRoleMenu } = require("../config/helper");
-const { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } = require("../config/token_key");
+// const { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } = require("../config/token_key");
 const jwt = require("jsonwebtoken");
 
 const dotenv = require("dotenv");
