@@ -1,12 +1,14 @@
 const massage_controller = require("../controller/massage.controller");
 const bodyParser = require('body-parser');
-//const { CheckToken } = require("../controller/user.controller");
+const { CheckToken } = require("../controller/user.controller");
 const massage = (app) =>{
-    
-    app.get("/api/massage/getList",massage_controller.getList);
+      
     app.post("/api/massage/create",massage_controller.create);
-    app.put("/api/massage/update",massage_controller.update);
-    app.delete("/api/massage/delete",massage_controller.remove); 
-       // app.use(CheckToken());
+    app.get("/api/massage/getList",CheckToken(),massage_controller.getList);
+    app.put("/api/massage/update",CheckToken(),massage_controller.update);
+    app.delete("/api/massage/delete",CheckToken(),massage_controller.remove); 
+     
 }
 module.exports = massage;
+
+
