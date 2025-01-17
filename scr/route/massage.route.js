@@ -1,5 +1,4 @@
 const massage_controller = require("../controller/massage.controller");
-const bodyParser = require('body-parser');
 const { CheckToken } = require("../controller/user.controller");
 const massage = (app) =>{
       
