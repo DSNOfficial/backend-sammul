@@ -132,7 +132,7 @@ const login = async (req, res) => {
 
         if (isCorrectPassword) {
             delete user[0].Password;
-            const accessToken = jwt.sign({ data: user[0] }, ACCESS_TOKEN_KEY, { expiresIn: "60s" });
+            const accessToken = jwt.sign({ data: user[0] }, ACCESS_TOKEN_KEY, { expiresIn: "30m" });
             const refreshToken = jwt.sign({ data: user[0] }, REFRESH_TOKEN_KEY);
 
             res.json({ message: "Login successful", 
