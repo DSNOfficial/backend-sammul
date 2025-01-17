@@ -1,84 +1,53 @@
 const db = require("../config/db");
-const bodyParser = require('body-parser');
-const { logError, isEmptyOrNull, removeFile } = require("../config/helper");
+const { logError } = require("../config/helper");
+const massage = require("../route/massage.route");
 
 const getList = async (req, res) => {
     try {
-        const { txt_search } = req.query;
-        let sql = "SELECT * FROM tbmassage WHERE 1=1";
-        let sqlWhere = "";
-        let param = {};
-
-        if (!isEmptyOrNull(txt_search)) {
-            sqlWhere += " AND (title LIKE :txt_search OR Email LIKE :txt_search OR Phone LIKE :txt_search OR Email LIKE :txt_search OR Massage LIKE :txt_search)";
-            param["txt_search"] = `%${txt_search}%`;
-        }
-
-        sql = sql + sqlWhere + " ORDER BY id DESC";
-        const [list] = await db.query(sql, param);
-
+        const [list] = await db.query("SELECT * FROM tbmassage WHERE 1=1 ORDER BY id DESC")
         res.json({
-            list: list,
-            userThatRequested: req.user
-        });
+            message: 'This is listing route.',
+            list,
+            userThatRequested:req.user
+        })
     } catch (err) {
-        logError("tbmassage.getList", err, res);
+        logError("tbmassage.getList", err, res)
     }
 }
-// const sql = "INSERT INTO tbmassage (title, Email, Phone, Massage, Email) VALUES (:title, :Email, :Phone, :Massage, :Email)";
-
-
+//	id	parentId	title	metaTitle	slug	content
 const create = async (req, res) => {
     try {
-        const {  title,Phone, Email,Massage} = req.body;
-      
-        const message = {}; // Empty object
-        if (isEmptyOrNull(title)) {
-            message.title = "title required!";
+        var sql = `INSERT INTO tbmassage
+            (Title, Phone, Massage,Email)
+            VALUES (:Title, :Phone,:Massage,:Email)`;
+        var param = {
+            Title: req.body.Title,
+            Phone: req.body.Phone,
+            Massage: req.body.Massage,
+            Email: req.body.Email
+            
         }
-        if (isEmptyOrNull(Phone)) {
-            message.Phone = "Phone required!";
-        }
-        // if (isEmptyOrNull(Email)) {
-        //     message.Email = "Email required!";
-        // }
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const sql = "INSERT INTO tbmassage ( title,Email, Phone,Massage) VALUES ( :title, :Email,:Phone,:Massage)";
-        const param = {
-           
-            title,
-            Email,
-            Phone,
-            Massage,
-        };
         const [data] = await db.query(sql, param);
         res.json({
-            message: (data.affectedRows != 0 ? "sent successfully" : "Not found"),
-
-            data: data
-        });
+            message: 'Sent successfully',
+            data
+        })
     } catch (err) {
-        logError("tbmassage.create", err, res);
+        logError("tbmassage.create", err, res)
     }
 }
 
 const update = async (req, res) => {
     try {
         var sql =`UPDATE tbmassage SET
-        title = :title,Email =:Email, Phone = :Phone,Massage=:Massage
+        Title = :Title,Phone =:Phone, Massage = :Massage,Email=:Email
             WHERE id = :id`;
         var param = {
             id: req.body.id,
-            title: req.body.title,
-            Email: req.body.Email,
-            Massage:req.body.Massage,
-            Phone: req.body.Phone
+            Title: req.body.Title,
+            Phone: req.body.Phone,
+            Massage: req.body.Massage,
+            Email: req.body.Email
         }
         const [data] = await db.query(sql, param);
         res.json({
@@ -114,4 +83,5 @@ module.exports = {
     create,
     update,
     remove,
-};
+
+}
