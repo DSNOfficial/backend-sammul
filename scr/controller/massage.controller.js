@@ -18,10 +18,10 @@ const getList = async (req, res) => {
 const create = async (req, res) => {
     try {
         var sql = `INSERT INTO tbmassage
-            (Title, Phone, Massage,Email)
-            VALUES (:Title, :Phone,:Massage,:Email)`;
+            (title, Phone, Massage,Email)
+            VALUES (:title, :Phone,:Massage,:Email)`;
         var param = {
-            Title: req.body.Title,
+            title: req.body.title,
             Phone: req.body.Phone,
             Massage: req.body.Massage,
             Email: req.body.Email
@@ -40,11 +40,11 @@ const create = async (req, res) => {
 const update = async (req, res) => {
     try {
         var sql =`UPDATE tbmassage SET
-        Title = :Title,Phone =:Phone, Massage = :Massage,Email=:Email
+        title = :title,Phone =:Phone, Massage = :Massage,Email=:Email
             WHERE id = :id`;
         var param = {
             id: req.body.id,
-            Title: req.body.Title,
+            title: req.body.title,
             Phone: req.body.Phone,
             Massage: req.body.Massage,
             Email: req.body.Email
