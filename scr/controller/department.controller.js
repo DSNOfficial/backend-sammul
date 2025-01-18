@@ -52,7 +52,7 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const { Title,Name,Description,Status,Content} = req.body;
+        const { Title,Name,Description,Status,Content,timeCheck} = req.body;
         let Image = null;
         if (req.file) {
             Image = req.file.filename;
