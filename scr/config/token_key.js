@@ -1,3 +1,3 @@
-const ACCESS_TOKEN_KEY ="dafasdfdasf@!3213SDFA$#325%$^342#$!@$#@!12131231dsafdsfa2sa2$#@!$1243213432%$#%";
-const REFRESH_TOKEN_KEY ="@#$@$#5@#$%SDAF234234SD23213MDSKDFK123@#214a2$xasdsd#WERWQR;EWR23@!#4@321$#@!$#";
+const ACCESS_TOKEN_KEY ="";
+const REFRESH_TOKEN_KEY ="";
 module.exports ={ACCESS_TOKEN_KEY,REFRESH_TOKEN_KEY}
