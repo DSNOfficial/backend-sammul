@@ -5,7 +5,7 @@ const { CheckToken } = require("../controller/user.controller");
 const department = (app) =>{
    
     app.get("/api/department/getlist",department_controller.getList);
-    app.get("/api/department/getone",department_controller.getOne);
+    app.post("/api/department/getone",department_controller.getOne);
     
     app.post("/api/department/create",CheckToken(),upload.single("image"),department_controller.create);
     app.put("/api/department/update",CheckToken(),upload.single("image"), department_controller.update);
