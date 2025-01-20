@@ -126,7 +126,7 @@ const upload_file = multer({
 
 const getPermissionByRoleMenu = (RoleName) => {
   var data = {
-    Admin: [
+    IT: [
       {
         route: "home"
       },
@@ -209,12 +209,15 @@ const getPermissionByRoleMenu = (RoleName) => {
       },
 
     ],
-    IT: [
+    Admin: [
       {
         route: "marquee"
       },
       {
         route: "history"
+      },
+       {
+        route: "book-page"
       },
       {
         route: "inbox"
@@ -255,6 +258,7 @@ const getPermissionByRoleMenu = (RoleName) => {
       {
         route: "partner"
       },
+      
 
       {
         route: "uploads"
