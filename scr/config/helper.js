@@ -213,6 +213,11 @@ const getPermissionByRoleMenu = (RoleName) => {
       {
         route: "marquee"
       },
+         
+      {
+        route: "leader"
+      },
+      
       {
         route: "history"
       },
