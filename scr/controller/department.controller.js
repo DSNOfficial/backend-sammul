@@ -55,7 +55,7 @@ const create = async (req, res) => {
         const { Title,Name,Description,Status,Content,timeCheck} = req.body;
         let Image = null;
         if (req.file) {
-            Image = req.file.filename;
+            Image = req.file?.filename;
         }
         const message = {}; // Empty object
         if (isEmptyOrNull(Title)) {
@@ -96,7 +96,7 @@ const update = async (req, res) => {
         const { id, Name,Title ,Description,Status, Content,timeCheck} = req.body;
         let Image = null;
         if (req.file) {
-            Image = req.file.filename; // Change image | new image
+            Image = req.file?.filename; // Change image | new image
         } else {
             Image = req.body.PreImage; // Get old image
         }
