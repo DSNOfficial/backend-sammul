@@ -95,7 +95,8 @@ const create = async (req, res) => {
         var [data] = await db.query(sql, {
 
             ...req.body,
-            image: req.files?.upload_image[0].filename,
+            //image: req.files?.upload_image[0].filename,
+            image: req.files?.upload_image?.[0]?.filename || null
         });
 
         if (req.files && req.files?.upload_image_optional) {
