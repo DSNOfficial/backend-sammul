@@ -1,4 +1,4 @@
-
+const bodyParser = require("body-parser");
 const db = require("../config/db");
 const { logError } = require("../config/helper");
 const { isEmptyOrNull } = require("../config/helper");
@@ -18,9 +18,9 @@ const getList = async (req, res) => {
 
         sql = sql + sqlWhere + " ORDER BY id DESC";
         const [list] = await db.query(sql, param);
-        
 
-    
+
+
         res.json({
             list: list,
         });
@@ -28,126 +28,192 @@ const getList = async (req, res) => {
         logError("tbtraining.getList", err, res);
     }
 }
+// Route: GET /api/train/:id
 
+const TrainImage = async (req, res) => {
+    try {
 
+        var sql = "SELECT * FROM tbtraining_image WHERE training_id =:training_id";
+
+        var [list] = await db.query(sql, {
+            training_id: req.params.training_id,
+        });
+        res.json({
+            list,
+        });
+
+    } catch (err) {
+        logError("tbtraining.TrainImage", err, res);
+    }
+};
 
 const getOne = async (req, res) => {
     try {
-      const sql = "SELECT * FROM tbtraining WHERE id = :id";
-      const param = {
-        id: req.body.id  // Accessing the ID from URL parameters
-      };
-      const [result] = await db.query(sql, param);
-  
-      if (result.length === 0) {
-        return res.status(404).json({ message: 'Blog post not found' });
-      }
-  
-      res.json({
-        message: 'Blog post fetched successfully',
-        data: result[0]
-      });
+        const id = req.body.id || req.params.id; // support both body and param
+
+        // Validate ID
+        if (!id) {
+            return res.status(400).json({ message: 'Training ID is required' });
+        }
+
+        // Fetch main training record
+        const sqlTraining = "SELECT * FROM tbtraining WHERE id = :id";
+        const [trainingResult] = await db.query(sqlTraining, { id });
+
+        if (!trainingResult || trainingResult.length === 0) {
+            return res.status(404).json({ message: 'Training record not found' });
+        }
+
+        // Fetch related images
+        const sqlImages = "SELECT image FROM tbtraining_image WHERE training_id = :id";
+        const [imagesResult] = await db.query(sqlImages, { id });
+
+        // Return full training data with images
+        res.json({
+            message: 'Training record fetched successfully',
+            data: {
+                ...trainingResult[0],
+                images: imagesResult.map(img => img.image), // return only filenames
+            }
+        });
     } catch (err) {
-      logError("tbtraining.getOne", err, res);
+        logError("tbtraining.getOne", err, res);
     }
-  }
+};
+
+
+
   
 
 const create = async (req, res) => {
     try {
-        const {  title ,description,Status} = req.body;
-        let Image = null;
-        if (req.file) {
-            Image = req.file.filename;
-        }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(title)) {
-            message.title = "title required!";
-        }
-        // if (isEmptyOrNull(content)) {
-        //     message.content = "content required!";
-        // }
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const sql = "INSERT INTO tbtraining ( title, description,Status,Image) VALUES ( :title,:description,:Status ,:Image)";
-        const param = {
-           
-            title,
-            description,
-            Status,
-            Image
-        };
-        const [data] = await db.query(sql, param);
-        res.json({
-            data: data
+
+        const sql = `
+            INSERT INTO tbtraining (title, description, status, image)
+            VALUES (:title, :description, :status, :image)
+        `;
+        var [data] = await db.query(sql, {
+
+            ...req.body,
+            image: req.files?.upload_image[0].filename,
         });
+
+        if (req.files && req.files?.upload_image_optional) {
+            var ParaImageTrain = [];
+            req.files?.upload_image_optional.map((item, index) => {
+                ParaImageTrain.push([data?.insertId, item.filename]);
+            })
+            var slqTrainImage = "INSERT INTO tbtraining_image (training_id,image) VALUES :data";
+            var [dataImage] = await db.query(slqTrainImage, {
+                data: ParaImageTrain,
+            });
+
+        }
+        res.json({
+            data,
+            message: "Insert Success"
+
+
+        });
+
+
     } catch (err) {
         logError("tbtraining.create", err, res);
     }
-}
+};
 
 const update = async (req, res) => {
     try {
-        const { id, title ,description,Status} = req.body;
-        let Image = null;
-        if (req.file) {
-            Image = req.file.filename; // Change image | new image
-        } else {
-            Image = req.body.PreImage; // Get old image
+
+        var sql = "UPDATE tbtraining SET  title=:title, image=:image,description=:description,status=:status WHERE id = :id";
+        var filename = req.body.image;
+        /// new image
+        if (req.files?.upload_image) {
+            filename = req.files?.upload_image[0]?.filename;
         }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(id)) {
-            message.id = "id required!";
+        //image change for single image
+        if (
+            req.body.image != "" &&
+            req.body.image != null &&
+            req.body.image != "null" &&
+            req.files?.upload_image
+        ) {
+            removeFile(req.body.image); // remove old image
+            filename = req.files?.upload_image[0]?.filename;
         }
-        if (isEmptyOrNull(title)) {
-            message.title = "title required!";
+
+        /// image remove
+        if (req.body.image_remove == "1") {
+            removeFile(req.body.image); // remove image
+            filename = null;
         }
-        if (isEmptyOrNull(description)) {
-            message.description = "description required!";
-        }
-       
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
+
+
+
+        var [data] = await db.query(sql, {
+            ...req.body,
+            image: filename,
+
+        });
+
+        //image optional 
+
+        if (req.files && req.files?.upload_image_optional) {
+            var ParaImageTrain = [];
+            req.files?.upload_image_optional.map((item, index) => {
+                ParaImageTrain.push([req.body.id, item.filename]);
+            })
+            var slqTrainImage = "INSERT INTO tbtraining_image (training_id,image) VALUES :data";
+            var [dataImage] = await db.query(slqTrainImage, {
+                data: ParaImageTrain,
             });
-            return false;
+
         }
-        const param = {
-            id,
-            title,
-            description,
-            Status,
-            Image
-        };
-        const [dataInfo] = await db.query("SELECT * FROM tbtraining WHERE id=:id", { id:id });
-        if (dataInfo.length > 0) {
-            const sql = "UPDATE tbtraining SET  title=:title, Image=:Image,description=:description,Status=:Status WHERE id = :id";
-            const [data] = await db.query(sql, param);
-            if (data.affectedRows) {
-                if (req.file && !isEmptyOrNull(req.body.Image)) {
-                    await removeFile(req.body.Image); // Remove old file
-                }
+
+        // multiple image
+
+        // console.log(req.body.image_optional);
+
+        if (req.body.image_optional && req.body.image_optional.length > 0) {
+
+            //console.log(req.body.image_optional);
+            if (typeof req.body.image_optional == "string") {
+                req.body.image_optional = [req.body.image_optional];
             }
-            res.json({
-                message: (data.affectedRows != 0 ? "Update success" : "Not found"),
-                data: data
+            req.body.image_optional.map(async (item, index) => {
+                // remove database
+
+                let [data] = await db.query("DELETE FROM tbtraining_image WHERE image =:image",
+                    { image: item }
+                );
+
+
+                // unlink from hard
+                removeFile(item);
+
             });
-        } else {
-            res.json({
-                message: "Not found",
-                error: true
-            });
+
+            image_optional = [
+                {
+                    isFound: false, // true | false
+                    name: "",
+                    status: "removed",
+                    uid: "",
+                    url: ""
+                },
+            ];
+
         }
+
+        res.json({
+            message: (data.affectedRows != 0 ? "Update success" : "Not found"),
+            data: data
+        });
+
     } catch (err) {
         logError("tbtraining.update", err, res);
     }
-}
+};
 
 const remove = async (req, res) => {
     try {
@@ -175,13 +241,14 @@ const remove = async (req, res) => {
     } catch (err) {
         logError("tbtraining.remove", err, res);
     }
-}
+};
 
 module.exports = {
     getList,
     getOne,
     create,
     update,
+    TrainImage,
     remove
 };
 
