@@ -218,19 +218,31 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
     try {
-        const param = {
-            id: req.body.id
-        };
+        const param = { id: req.body.id };
+
         const [dataInfo] = await db.query("SELECT * FROM tbtraining WHERE id=:id", param);
+
         if (dataInfo.length > 0) {
+            // Delete associated optional images first
+            const [imageRows] = await db.query("SELECT image FROM tbtraining_image WHERE training_id = :id", param);
+            for (const img of imageRows) {
+                await removeFile(img.image); // remove each optional image
+            }
+
+            // Then delete the records from tbtraining_image
+            await db.query("DELETE FROM tbtraining_image WHERE training_id = :id", param);
+
+            // Delete main training record
             const sql = "DELETE FROM tbtraining WHERE id = :id";
             const [data] = await db.query(sql, param);
+
+            // Remove main image file if exists
             if (data.affectedRows) {
-                // If delete success then unlink | remove file
-                await removeFile(dataInfo[0].Image); // Get image from
+                await removeFile(dataInfo[0].image); // lowercase 'image'
             }
+
             res.json({
-                message: data.affectedRows != 0 ? "Remove success" : "Not found",
+                message: data.affectedRows ? "Remove success" : "Not found",
                 data: data
             });
         } else {
