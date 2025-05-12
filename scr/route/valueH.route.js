@@ -12,4 +12,3 @@ const valueH = (app) =>{
     app.delete("/api/values/delete",CheckToken(),valueH_controller.remove);    
 }
 module.exports = valueH;
-
