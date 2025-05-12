@@ -2,6 +2,7 @@ const db = require("../config/db");
 const { logError } = require("../config/helper");
 const { isEmptyOrNull } = require("../config/helper");
 const { removeFile } = require("../config/helper");
+//const decode = require("decode-uri-component");
 
 const getList = async (req, res) => {
     try {
@@ -50,100 +51,82 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const { Title,Description,Status,Content} = req.body;
-        let Image = null;
-        if (req.file) {
-            Image = req.file.filename;
-        }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(Title)) {
-            message.title = "title required!";
-        }
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const sql = "INSERT INTO tbvalue ( Title,Description,Status,Content,Image) VALUES ( :Title,:Description,:Status,:Content,:Image)";
-        const param = {                   
-            Title,
-            Description,
-            Status,
-            Content,
-            Image
-        };
-        const [data] = await db.query(sql, param);
-        res.json({
-            data: data
+        const sql = `
+            INSERT INTO tbvalue (Title, Description,image)
+            VALUES (:Title, :Description, :image)
+        `;
+        var [data] = await db.query(sql, {
+             ...req.body,          
+           image: req.file?.filename || null || "null" || "",
+           
         });
+         
+        res.json({
+            data,
+            message: "Insert Success"
+
+
+        });
+
+
     } catch (err) {
         logError("tbvalue.create", err, res);
     }
-}
+};
+
+
 
 const update = async (req, res) => {
     try {
-        const { id,Title ,Description,Status, Content} = req.body;
-        let Image = null;
+
+        var sql = "UPDATE tbvalue SET  Title=:Title, image=:image,Description=:Description WHERE id = :id";
+        var filename = req.body?.image;
+        /// new image
         if (req.file) {
-            Image = req.file.filename; // Change image | new image
-        } else {
-            Image = req.body.PreImage; // Get old image
+            filename = req.file?.filename;
         }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(id)) {
-            message.id = "id required!";
+        //image change for single image
+        if (
+            req.body.image != "" &&
+            req.body.image != null &&
+            req.body.image != "null" &&
+
+            req.file?.upload_image
+        ) {
+            removeFile(req.body.image); // remove old image
+            filename = req.file?.filename;
         }
-        if (isEmptyOrNull(Title)) {
-            message.title = "title required!";
+
+        /// image remove
+        if (req.body.image_remove == "1") {
+            removeFile(req.body.image); // remove image
+            filename = null;
         }
-        if (isEmptyOrNull(Description)) {
-            message.description = "description required!";
-        }
-       
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const param = {
-            id,
-            Title,
-            Description,
-            Status,
-            Content,
-            Image
-        };
-        const [dataInfo] = await db.query("SELECT * FROM tbvalue WHERE id=:id", { id: id });
-        if (dataInfo.length > 0) {
-            const sql = "UPDATE tbvalue SET Content=:Content, Title=:Title, Image=:Image,Description=:Description,Status=:Status WHERE id = :id";
-            const [data] = await db.query(sql, param);
-            if (data.affectedRows) {
-                if (req.file && !isEmptyOrNull(req.body.Image)) {
-                    await removeFile(req.body.Image); // Remove old file
-                }
-            }
-            res.json({
-                message: (data.affectedRows != 0 ? "Update success" : "Not found"),
-                data: data
-            });
-        } else {
-            res.json({
-                message: "Not found",
-                error: true
-            });
-        }
+
+
+
+        var [data] = await db.query(sql, {
+            ...req.body,
+            image: filename,
+
+        });
+
+        res.json({
+            data,
+            message: "Update Success"
+
+
+        });
+     
+
     } catch (err) {
-        logError("tbvalue.update", err, res);
+        logError("tbtraining.update", err, res);
     }
-}
+};
 
 const remove = async (req, res) => {
     try {
+        let Image = null || "" || "null";
         const param = {
             id: req.body.id
         };
