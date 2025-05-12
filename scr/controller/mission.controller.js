@@ -2,6 +2,7 @@ const db = require("../config/db");
 const { logError } = require("../config/helper");
 const { isEmptyOrNull } = require("../config/helper");
 const { removeFile } = require("../config/helper");
+//const decode = require("decode-uri-component");
 
 const getList = async (req, res) => {
     try {
@@ -11,15 +12,13 @@ const getList = async (req, res) => {
         let param = {};
 
         if (!isEmptyOrNull(txt_search)) {
-            sqlWhere += " AND (title LIKE :txt_search OR description LIKE :txt_search OR status LIKE :txt_search)";
+            sqlWhere += " AND (Title LIKE :txt_search OR Description LIKE :txt_search OR Content LIKE :txt_search OR Name LIKE :txt_search)";
             param["txt_search"] = `%${txt_search}%`;
         }
 
         sql = sql + sqlWhere + " ORDER BY id DESC";
         const [list] = await db.query(sql, param);
         
-
-    
         res.json({
             list: list,
         });
@@ -27,8 +26,6 @@ const getList = async (req, res) => {
         logError("tbmission.getList", err, res);
     }
 }
-
-
 
 const getOne = async (req, res) => {
     try {
@@ -39,11 +36,11 @@ const getOne = async (req, res) => {
       const [result] = await db.query(sql, param);
   
       if (result.length === 0) {
-        return res.status(404).json({ message: 'mission  not found' });
+        return res.status(404).json({ message: 'mission post not found' });
       }
   
       res.json({
-        message: 'Mission post fetched successfully',
+        message: 'mission post fetched successfully',
         data: result[0]
       });
     } catch (err) {
@@ -54,103 +51,82 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const {  title ,description,status} = req.body;
-        let Image = null;
-        if (req.file) {
-            Image = req.file.filename;
-        }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(title)) {
-            message.title = "title required!";
-        }
-        // if (isEmptyOrNull(content)) {
-        //     message.content = "content required!";
-        // }
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const sql = "INSERT INTO tbmission ( title, description,status,Image) VALUES ( :title,:description,:status ,:Image)";
-        const param = {
+        const sql = `
+            INSERT INTO tbmission (Title, Description,image)
+            VALUES (:Title, :Description, :image)
+        `;
+        var [data] = await db.query(sql, {
+             ...req.body,          
+           image: req.file?.filename || null || "null" || "",
            
-            title,
-            description,
-            status,
-            Image
-        };
-        const [data] = await db.query(sql, param);
-        res.json({
-            message: 'got successfully!!!',
-            data: data
         });
+         
+        res.json({
+            data,
+            message: "Insert Success"
+
+
+        });
+
+
     } catch (err) {
         logError("tbmission.create", err, res);
     }
-}
+};
+
+
 
 const update = async (req, res) => {
     try {
-        const { id, title ,description,status} = req.body;
-        let Image = null;
+
+        var sql = "UPDATE tbmission SET  Title=:Title, image=:image,Description=:Description WHERE id = :id";
+        var filename = req.body?.image;
+        /// new image
         if (req.file) {
-            Image = req.file.filename; // Change image | new image
-        } else {
-            Image = req.body.PreImage; // Get old image
+            filename = req.file?.filename;
         }
-        const message = {}; // Empty object
-        if (isEmptyOrNull(id)) {
-            message.id = "id required!";
+        //image change for single image
+        if (
+            req.body.image != "" &&
+            req.body.image != null &&
+            req.body.image != "null" &&
+
+            req.file?.upload_image
+        ) {
+            removeFile(req.body.image); // remove old image
+            filename = req.file?.filename;
         }
-        if (isEmptyOrNull(title)) {
-            message.title = "title required!";
+
+        /// image remove
+        if (req.body.image_remove == "1") {
+            removeFile(req.body.image); // remove image
+            filename = null;
         }
-        if (isEmptyOrNull(description)) {
-            message.description = "description required!";
-        }
-       
-        if (Object.keys(message).length > 0) {
-            res.json({
-                error: true,
-                message: message
-            });
-            return false;
-        }
-        const param = {
-            id,
-            title,
-            description,
-            status,
-            Image
-        };
-        const [dataInfo] = await db.query("SELECT * FROM tbmission WHERE id=:id", { id: id });
-        if (dataInfo.length > 0) {
-            const sql = "UPDATE tbmission SET  title=:title, Image=:Image,description=:description,status=:status WHERE id = :id";
-            const [data] = await db.query(sql, param);
-            if (data.affectedRows) {
-                if (req.file && !isEmptyOrNull(req.body.Image)) {
-                    await removeFile(req.body.Image); // Remove old file
-                }
-            }
-            res.json({
-                message: (data.affectedRows != 0 ? "Update success" : "Not found"),
-                data: data
-            });
-        } else {
-            res.json({
-                message: "Not found",
-                error: true
-            });
-        }
+
+
+
+        var [data] = await db.query(sql, {
+            ...req.body,
+            image: filename,
+
+        });
+
+        res.json({
+            data,
+            message: "Update Success"
+
+
+        });
+     
+
     } catch (err) {
-        logError("tbmission.update", err, res);
+        logError("tbtraining.update", err, res);
     }
-}
+};
 
 const remove = async (req, res) => {
     try {
+        let Image = null || "" || "null";
         const param = {
             id: req.body.id
         };
