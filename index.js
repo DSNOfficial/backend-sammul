@@ -84,7 +84,7 @@ postMeta(app);
 const port = 9899;
 // const port =9899;
 app.listen(port, () => {
-  console.log("http://194.233.76.73:" + port)
+  console.log("http://localhost:" + port)
 })
 
 
