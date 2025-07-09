@@ -6,7 +6,7 @@ services:
     volumes:
       - ./scr:/app/scr
       - ./index.js:/app/index.js
-      - /root/assets/public_file:/app/uploads
+      - /var/www/public_file:/app/uploads
       - .env:/app/.env
     scale: 1
     networks:
